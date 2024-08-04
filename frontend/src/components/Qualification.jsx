@@ -70,7 +70,7 @@ const Qualification = () => {
                 <CardHeader
                     title={
                         <Typography variant="h5" align="center" fontWeight="bold">
-                            Qualification Details
+                            Education Details
                         </Typography>
                     }
                 />
@@ -189,7 +189,7 @@ const Qualification = () => {
                     }}
                     onClick={handleAddExperience}
                 >
-                    Add Qualification
+                    Add Education
                 </Button>
             </CardContent >
 

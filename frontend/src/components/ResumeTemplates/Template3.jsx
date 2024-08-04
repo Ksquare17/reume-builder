@@ -272,7 +272,7 @@ const Template3 = () => {
           </Box>
           <Box sx={{ flex: 2, color: '#00000', p: 3, backgroundColor: '#FAFCFF' }}>
             <SubheadingP> About me</SubheadingP>
-            <Typography>{profile.about}</Typography>
+            <Typography sx={{padding: 2}}>{profile.aboutMe}</Typography>
             <SubheadingP>  Education </SubheadingP>
             {
               qualifications.map((education, index) => (

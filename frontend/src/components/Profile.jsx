@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -18,19 +18,23 @@ import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile } from "../redux/profileSlice";
-import { Link } from 'react-router-dom';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import {  toast } from 'react-toastify';
+import { Link } from "react-router-dom";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { toast } from "react-toastify";
+
 const Profile = () => {
   const dispatch = useDispatch();
   const currentProfile = useSelector((state) => state.profileDetails);
   const [errors, setErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  console.log("Profilepage:", currentProfile);
+  useEffect(() => {
+    checkFormValidity();
+  }, [currentProfile, errors]);
 
   const validate = (name, value) => {
     let errorMsg = "None";
-    
+
     switch (name) {
       case "firstName":
       case "lastName":
@@ -50,19 +54,21 @@ const Profile = () => {
         }
         break;
       default:
-        errorMsg='None'
+        errorMsg = "None";
         break;
-    
     }
-    console.log("errs",errorMsg,errors)
-    if(errorMsg=='None'){
-setErrors({})
-    }else{
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: errorMsg,
-    }));
-}
+
+    if (errorMsg === "None") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: undefined,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: errorMsg,
+      }));
+    }
   };
 
   const handleChange = (event) => {
@@ -71,8 +77,16 @@ setErrors({})
     dispatch(updateProfile({ [name]: value }));
   };
 
+  const checkFormValidity = () => {
+    const requiredFields = ["firstName", "lastName", "email", "mobile", "aboutMe"];
+    const isValid = requiredFields.every(
+      (field) => currentProfile[field] && !errors[field]
+    );
+    setIsFormValid(isValid);
+  };
+
   const containerStyle = {
-    marginTop: "30",
+    marginTop: "30px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -92,8 +106,8 @@ setErrors({})
       </Card>
       <CardContent>
         <div>
-          <Grid container spacing={2}  lg={12} sx={{display:'flex', justifyContent:'center', }}>
-            <Grid item md={6} sm={12} xs={12} lg={6} >
+          <Grid container spacing={2} lg={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item md={6} sm={12} xs={12} lg={6}>
               <TextField
                 margin="dense"
                 variant="outlined"
@@ -142,7 +156,7 @@ setErrors({})
               />
             </Grid>
           </Grid>
-          <Grid container spacing={2} sx={{display:'flex', justifyContent:'center', }} lg={12}>
+          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }} lg={12}>
             <Grid item md={6} sm={12} xs={12} lg={6}>
               <TextField
                 margin="dense"
@@ -361,48 +375,41 @@ setErrors({})
         </div>
       </CardContent>
       <Grid container spacing={2} alignItems="center" lg={12}>
-  <Grid item md={12} sm={12} xs={12} lg={12} style={containerStyles}>
-    {Object.keys(errors).length === 0 ? (
-      <Link to={'/education'} style={linkStyle}>
-        <h4>Education Section</h4>
-        <ArrowForwardIcon style={iconStyle} />
-      </Link>
-    ) : (
-      <div onClick={() => toast.error("Please resolve errors first")} style={linkStyle}>
-        <h4>Education Section</h4>
-        <ArrowForwardIcon style={iconStyle} />
-      </div>
-    )}
-  </Grid>
-</Grid>
+        <Grid item md={12} sm={12} xs={12} lg={12} style={containerStyles}>
+          <Link to={isFormValid ? "/education" : "#"} style={{ ...linkStyle, pointerEvents: isFormValid ? "auto" : "none", color: isFormValid ? "inherit" : "grey" }}>
+            <h4>Education Section</h4>
+            <ArrowForwardIcon style={iconStyle} />
+          </Link>
+        </Grid>
+      </Grid>
     </div>
   );
 };
 
 const linkStyle = {
-  textDecoration: 'none',
-  color: 'inherit',
-  display: 'flex',
-  justifyContent: 'end',
-  alignItems: 'center',
-  gap: '5px',
-  transition: 'border-radius 0.3s', // Add transition for border-radius
-  borderRadius: '4px', // Initial border-radius
-  padding: '5px', // Add padding for hover effect
+  textDecoration: "none",
+  color: "inherit",
+  display: "flex",
+  justifyContent: "end",
+  alignItems: "center",
+  gap: "5px",
+  transition: "border-radius 0.3s",
+  borderRadius: "4px",
+  padding: "5px",
 };
 
 const containerStyles = {
-  marginBottom: '20px',
-  display: 'flex',
-  justifyContent: 'end',
-  alignItems: 'center',
-  marginTop: '20px',
-  paddingRight: '40px',
+  marginBottom: "20px",
+  display: "flex",
+  justifyContent: "end",
+  alignItems: "center",
+  marginTop: "20px",
+  paddingRight: "40px",
 };
 
 const iconStyle = {
-  verticalAlign: 'middle', // Align icon vertically with text
-  marginLeft: '5px', // Add margin between icon and text
+  verticalAlign: "middle",
+  marginLeft: "5px",
 };
 
 export default Profile;
